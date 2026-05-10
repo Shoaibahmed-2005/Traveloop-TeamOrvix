@@ -41,9 +41,12 @@ input, textarea, select { font-family: var(--font-family); outline: none; }
 .btn-ghost:hover { background: var(--color-surface-2); color: var(--color-text-primary); }
 
 /* ========= CARDS with glassmorphism ========= */
-.card { background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--color-border-light); transition: box-shadow var(--transition-base), transform var(--transition-base); }
-.card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
-.glass-card { background: rgba(255,255,255,0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.3); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+.card { background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--color-border-light); transition: box-shadow var(--transition-base), transform var(--transition-base); animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards; }
+.card:nth-child(2) { animation-delay: 0.1s; }
+.card:nth-child(3) { animation-delay: 0.2s; }
+.card:nth-child(4) { animation-delay: 0.3s; }
+.card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+.glass-card { background: rgba(255,255,255,0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.3); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); animation: fadeIn 0.8s ease-out backwards; }
 
 /* ========= FORM FIELDS ========= */
 .input-field { width: 100%; padding: 12px 16px; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); font-size: var(--font-size-base); color: var(--color-text-primary); background: var(--color-surface); transition: border-color var(--transition-fast), box-shadow var(--transition-fast); }
@@ -119,3 +122,20 @@ input, textarea, select { font-family: var(--font-family); outline: none; }
 
 @media (max-width: 768px) { .form-grid-2 { grid-template-columns: 1fr; } .page-container { padding: 0 var(--space-4); } .modal { margin: var(--space-4); } }
 @media (max-width: 480px) { .page-title { font-size: var(--font-size-2xl); } }
+
+/* ========= DATE INPUT FIX ========= */
+/* Ensure the calendar icon and text show correctly in all browsers */
+input[type="date"] {
+  color: var(--color-text-primary);
+  color-scheme: light;
+  appearance: auto;
+  -webkit-appearance: auto;
+  cursor: pointer;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.7;
+  filter: invert(0.3);
+}
+input[type="date"]::-webkit-datetime-edit { color: var(--color-text-primary); }
+input[type="date"]::-webkit-datetime-edit-text { color: var(--color-text-muted); }

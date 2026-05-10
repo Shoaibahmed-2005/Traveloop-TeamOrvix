@@ -4,17 +4,22 @@ CREATE TABLE IF NOT EXISTS users (
   first_name VARCHAR(100) NOT NULL,
   last_name VARCHAR(100) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
+  password_hash VARCHAR(255),
   phone VARCHAR(20),
   city VARCHAR(100),
   country VARCHAR(100),
   profile_photo VARCHAR(500),
   additional_info TEXT,
+  google_id VARCHAR(255),
   role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('user', 'admin')),
   is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
+-- Add google_id to existing tables (idempotent)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255);
+ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
+
 
 -- CITIES
 CREATE TABLE IF NOT EXISTS cities (

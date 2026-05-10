@@ -5,11 +5,13 @@ import { itineraryAPI } from '../../api/itineraryAPI.js';
 import { tripAPI } from '../../api/tripAPI.js';
 import { formatDateRange } from '../../utils/formatDate.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 const SECTION_ICONS = { hotel:'🏨', transport:'🚂', activity:'🎯', meal:'🍽️', other:'📌' };
 
 const ItineraryView = () => {
   const { id: tripId } = useParams();
+  const { user } = useAuth();
   const [trip, setTrip] = useState(null);
   const [stops, setStops] = useState([]);
   const [sectionsMap, setSectionsMap] = useState({});
@@ -92,7 +94,7 @@ const ItineraryView = () => {
                       {section.description && <div style={{fontSize:'var(--font-size-sm)', color:'var(--color-text-muted)', marginTop:'var(--space-2)'}}>{section.description}</div>}
                     </div>
                     {section.estimated_cost > 0 && (
-                      <span style={{fontWeight:'var(--font-weight-bold)', color:'var(--color-secondary)', fontSize:'var(--font-size-sm)', whiteSpace:'nowrap'}}>{formatCurrency(section.estimated_cost)}</span>
+                      <span style={{fontWeight:'var(--font-weight-bold)', color:'var(--color-secondary)', fontSize:'var(--font-size-sm)', whiteSpace:'nowrap'}}>{formatCurrency(section.estimated_cost, user?.country)}</span>
                     )}
                   </div>
                 ))}
@@ -106,15 +108,15 @@ const ItineraryView = () => {
               <h3 style={{fontWeight:'var(--font-weight-bold)', marginBottom:'var(--space-4)'}}>💰 Budget Summary</h3>
               <div style={{display:'flex', justifyContent:'space-between', marginBottom:'var(--space-2)', fontSize:'var(--font-size-sm)'}}>
                 <span style={{color:'var(--color-text-muted)'}}>Total Budget</span>
-                <span style={{fontWeight:'var(--font-weight-semibold)'}}>{formatCurrency(trip?.total_budget || 0)}</span>
+                <span style={{fontWeight:'var(--font-weight-semibold)'}}>{formatCurrency(trip?.total_budget || 0, user?.country)}</span>
               </div>
               <div style={{display:'flex', justifyContent:'space-between', marginBottom:'var(--space-2)', fontSize:'var(--font-size-sm)'}}>
                 <span style={{color:'var(--color-text-muted)'}}>Spent</span>
-                <span style={{fontWeight:'var(--font-weight-semibold)', color:'var(--color-error)'}}>{formatCurrency(trip?.spent_amount || 0)}</span>
+                <span style={{fontWeight:'var(--font-weight-semibold)', color:'var(--color-error)'}}>{formatCurrency(trip?.spent_amount || 0, user?.country)}</span>
               </div>
               <div style={{display:'flex', justifyContent:'space-between', marginBottom:'var(--space-4)', fontSize:'var(--font-size-sm)'}}>
                 <span style={{color:'var(--color-text-muted)'}}>Estimated</span>
-                <span style={{fontWeight:'var(--font-weight-semibold)', color:'var(--color-secondary)'}}>{formatCurrency(totalCost)}</span>
+                <span style={{fontWeight:'var(--font-weight-semibold)', color:'var(--color-secondary)'}}>{formatCurrency(totalCost, user?.country)}</span>
               </div>
               <Link to={`/trips/${tripId}/budget`} className="btn-primary" style={{width:'100%', textAlign:'center', display:'block', padding:'10px'}}>+ Add Expense</Link>
             </div>

@@ -7,6 +7,7 @@ import { cityAPI } from '../../api/cityAPI.js';
 import { tripAPI } from '../../api/tripAPI.js';
 import { formatDateRange } from '../../utils/formatDate.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
+import { useAuth } from '../../context/AuthContext.jsx';
 import { useDebounce } from '../../hooks/useDebounce.js';
 import './ItineraryBuilder.css';
 
@@ -20,6 +21,7 @@ const SECTION_TYPES = [
 
 const ItineraryBuilder = () => {
   const { id: tripId } = useParams();
+  const { user } = useAuth();
   const [trip, setTrip] = useState(null);
   const [stops, setStops] = useState([]);
   const [selectedStop, setSelectedStop] = useState(null);
@@ -209,7 +211,7 @@ const ItineraryBuilder = () => {
                           <div className="section-card-title">{section.title}</div>
                           {section.start_date && <div className="section-card-dates">{formatDateRange(section.start_date, section.end_date)}</div>}
                         </div>
-                        {section.estimated_cost > 0 && <span className="section-cost">{formatCurrency(section.estimated_cost)}</span>}
+                        {section.estimated_cost > 0 && <span className="section-cost">{formatCurrency(section.estimated_cost, user?.country)}</span>}
                         <div className="section-actions">
                           <button className="btn-ghost" onClick={() => { setEditSection(section); setSectionForm({ title:section.title, sectionType:section.section_type, description:section.description||'', startDate:section.start_date?.split('T')[0]||'', endDate:section.end_date?.split('T')[0]||'', estimatedCost:section.estimated_cost||'' }); setShowAddSection(true); }}>✏️</button>
                           <button className="btn-ghost" style={{color:'var(--color-error)'}} onClick={() => handleDeleteSection(section.id)}>🗑️</button>
@@ -228,8 +230,8 @@ const ItineraryBuilder = () => {
       {/* Sticky bottom bar */}
       {selectedStop && (
         <div className="builder-bottom-bar">
-          <span>✈️ <strong>{selectedStop.city_name}</strong> — Estimated: <strong>{formatCurrency(totalEstimated)}</strong></span>
-          {trip?.total_budget > 0 && <span style={{color:'var(--color-text-muted)'}}>of {formatCurrency(trip.total_budget)} budget</span>}
+          <span>✈️ <strong>{selectedStop.city_name}</strong> — Estimated: <strong>{formatCurrency(totalEstimated, user?.country)}</strong></span>
+          {trip?.total_budget > 0 && <span style={{color:'var(--color-text-muted)'}}>of {formatCurrency(trip.total_budget, user?.country)} budget</span>}
           <Link to={`/trips/${tripId}/itinerary`} className="btn-primary">View Full Itinerary</Link>
         </div>
       )}

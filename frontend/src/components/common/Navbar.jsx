@@ -15,7 +15,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/dashboard" className="navbar-logo">
-          <img src="/logo.png" alt="Traveloop" height="40" onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }} />
+          <img src="/logo.png" alt="Traveloop" onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }} />
           <span className="navbar-logo-fallback">Traveloop</span>
         </Link>
 

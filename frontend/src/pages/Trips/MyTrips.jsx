@@ -5,10 +5,12 @@ import { tripAPI } from '../../api/tripAPI.js';
 import Loader from '../../components/common/Loader.jsx';
 import { formatDateRange, daysBetween } from '../../utils/formatDate.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
+import { useAuth } from '../../context/AuthContext.jsx';
 import './Trips.css';
 
 const TripCard = ({ trip, onDelete }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const pct = trip.total_budget > 0 ? Math.min(100, Math.round((trip.spent_amount / trip.total_budget) * 100)) : 0;
   const [deleting, setDeleting] = useState(false);
   const [confirmDel, setConfirmDel] = useState(false);
@@ -32,7 +34,7 @@ const TripCard = ({ trip, onDelete }) => {
           <div className="trip-budget">
             <div className="trip-budget-row">
               <span className="trip-budget-label">Budget</span>
-              <span className="trip-budget-value">{pct}% of {formatCurrency(trip.total_budget)}</span>
+              <span className="trip-budget-value">{pct}% of {formatCurrency(trip.total_budget, user?.country)}</span>
             </div>
             <div className="progress-bar">
               <div className={`progress-fill ${pct >= 100 ? 'danger' : pct >= 80 ? 'warning' : ''}`} style={{ width: `${pct}%` }} />

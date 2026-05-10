@@ -1,7 +1,7 @@
 # Graph Report - traveloop_TeamOrvix  (2026-05-10)
 
 ## Corpus Check
-- 71 files · ~44,289 words
+- 71 files · ~56,655 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -34,12 +34,12 @@
   frontend\src\components\common\Navbar.jsx → frontend\src\context\AuthContext.jsx
 - `ProtectedRoute()` --calls--> `useAuth()`  [INFERRED]
   frontend\src\components\common\ProtectedRoute.jsx → frontend\src\context\AuthContext.jsx
-- `AdminDashboard()` --calls--> `useAuth()`  [INFERRED]
-  frontend\src\pages\Admin\AdminDashboard.jsx → frontend\src\context\AuthContext.jsx
-- `Login()` --calls--> `useAuth()`  [INFERRED]
-  frontend\src\pages\Auth\Login.jsx → frontend\src\context\AuthContext.jsx
-- `Community()` --calls--> `useAuth()`  [INFERRED]
-  frontend\src\pages\Community\Community.jsx → frontend\src\context\AuthContext.jsx
+- `useAuth()` --calls--> `AdminDashboard()`  [INFERRED]
+  frontend\src\context\AuthContext.jsx → frontend\src\pages\Admin\AdminDashboard.jsx
+- `useAuth()` --calls--> `Login()`  [INFERRED]
+  frontend\src\context\AuthContext.jsx → frontend\src\pages\Auth\Login.jsx
+- `useAuth()` --calls--> `Community()`  [INFERRED]
+  frontend\src\context\AuthContext.jsx → frontend\src\pages\Community\Community.jsx
 
 ## Communities
 

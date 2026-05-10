@@ -4,11 +4,13 @@ import { toast } from 'react-toastify';
 import { tripAPI } from '../../api/tripAPI.js';
 import { formatDateRange, daysBetween, daysRemaining } from '../../utils/formatDate.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
+import { useAuth } from '../../context/AuthContext.jsx';
 import './TripDetail.css';
 
 const TripDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [trip, setTrip] = useState(null);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -93,8 +95,8 @@ const TripDetail = () => {
           </div>
           <div className="td-stat-card">
             <div className="td-stat-icon">💰</div>
-            <div className="td-stat-val">{formatCurrency(trip.spent_amount)}</div>
-            <div className="td-stat-label">of {formatCurrency(trip.total_budget)}</div>
+            <div className="td-stat-val">{formatCurrency(trip.spent_amount, user?.country)}</div>
+            <div className="td-stat-label">of {formatCurrency(trip.total_budget, user?.country)}</div>
           </div>
         </div>
 

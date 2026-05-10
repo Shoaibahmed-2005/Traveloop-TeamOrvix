@@ -3,18 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { cityAPI } from '../../api/cityAPI.js';
 import { useDebounce } from '../../hooks/useDebounce.js';
-import { formatCurrency } from '../../utils/formatCurrency.js';
+import { getCostTierLabel } from '../../utils/formatCurrency.js';
+import { useAuth } from '../../context/AuthContext.jsx';
 
-const REGIONS = ['Asia', 'Europe', 'Americas', 'Africa', 'Oceania'];
-const COST_COLORS = { cheap: '#10B981', medium: '#F59E0B', expensive: '#EF4444' };
-const getCostLabel = (idx) => {
-  if (idx < 1) return { label: '$', color: '#10B981', text: 'Budget' };
-  if (idx < 2) return { label: '$$', color: '#F59E0B', text: 'Moderate' };
-  return { label: '$$$', color: '#EF4444', text: 'Expensive' };
-};
 
 const CitySearch = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [cities, setCities] = useState([]);
   const [regions, setRegions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +44,7 @@ const CitySearch = () => {
     <div style={{paddingBottom:'var(--space-16)'}}>
       <div style={{background:'var(--gradient-hero)', padding:'var(--space-10) 0'}}>
         <div className="page-container">
-          <h1 style={{fontSize:'var(--font-size-4xl)', fontWeight:'var(--font-weight-extrabold)', color:'white', marginBottom:'var(--space-4)'}}>🌍 Explore Destinations</h1>
+          <h1 style={{fontSize:'var(--font-size-4xl)', fontWeight:'var(--font-weight-extrabold)', color:'white', marginBottom:'var(--space-4)'}}>Explore Destinations</h1>
           <div style={{position:'relative', maxWidth:600}}>
             <input className="input-field" placeholder="Search cities, countries..." value={search} onChange={e => setSearch(e.target.value)} style={{paddingLeft:44, fontSize:'var(--font-size-lg)', height:52, borderRadius:'var(--radius-xl)'}} />
             <span style={{position:'absolute', left:14, top:'50%', transform:'translateY(-50%)', fontSize:20}}>🔍</span>
@@ -80,26 +75,39 @@ const CitySearch = () => {
                 {[...Array(9)].map((_,i) => <div key={i} className="skeleton" style={{height:240, borderRadius:'var(--radius-lg)'}} />)}
               </div>
             ) : cities.length === 0 ? (
-              <div className="empty-state"><div className="empty-state-icon">🗺️</div><h3 className="empty-state-title">No cities found</h3><p className="empty-state-text">Try a different search or region filter.</p></div>
+              <div className="empty-state"><h3 className="empty-state-title">No cities found</h3><p className="empty-state-text">Try a different search or region filter.</p></div>
             ) : (
               <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:'var(--space-4)'}}>
                 {cities.map((city, i) => {
-                  const cost = getCostLabel(city.cost_index);
                   return (
                     <div key={city.id} className="card" style={{cursor:'pointer', overflow:'hidden'}} onClick={() => setSelectedCity(city)}>
-                      <div style={{height:160, background:GRADIENTS[i % GRADIENTS.length], position:'relative', display:'flex', alignItems:'flex-end', padding:'var(--space-3)'}}>
-                        <div style={{display:'flex', gap:'var(--space-2)', alignItems:'center'}}>
-                          <span className="badge" style={{background:'rgba(0,0,0,0.3)', color:'white', backdropFilter:'blur(4px)'}}>{city.region}</span>
-                          <span className="badge" style={{background:'rgba(0,0,0,0.3)', color:cost.color, backdropFilter:'blur(4px)'}}>{cost.label}</span>
-                        </div>
+                      <div style={{height:160, background:GRADIENTS[i % GRADIENTS.length], position:'relative', display:'flex', alignItems:'flex-end', padding:'var(--space-3)', overflow:'hidden'}}>
+                        {city.image_url && (
+                          <img
+                            src={city.image_url}
+                            alt={city.name}
+                            style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }}
+                            onError={e => { e.target.style.display='none'; }}
+                          />
+                        )}
+                        {/* Gradient overlay for text readability */}
+                        <div style={{position:'absolute', inset:0, background:'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 60%)'}} />
+                        {(() => { const ct = getCostTierLabel(city.cost_index, user?.country); return (
+                          <div style={{display:'flex', gap:'var(--space-2)', alignItems:'center', position:'relative', zIndex:1}}>
+                            <span className="badge" style={{background:'rgba(0,0,0,0.3)', color:'white', backdropFilter:'blur(4px)'}}>{city.region}</span>
+                            <span className="badge" style={{background:'rgba(0,0,0,0.3)', color:ct.color, backdropFilter:'blur(4px)'}}>{ct.text}</span>
+                          </div>
+                        ); })()}
                       </div>
                       <div style={{padding:'var(--space-4)'}}>
                         <div style={{fontWeight:'var(--font-weight-bold)', fontSize:'var(--font-size-lg)', color:'var(--color-text-primary)'}}>{city.name}</div>
                         <div style={{fontSize:'var(--font-size-sm)', color:'var(--color-text-muted)', marginBottom:'var(--space-2)'}}>{city.country}</div>
-                        <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
-                          <span style={{fontSize:'var(--font-size-xs)', color:cost.color, fontWeight:'var(--font-weight-semibold)'}}>{cost.text}</span>
-                          <span style={{fontSize:'var(--font-size-xs)', color:'var(--color-text-muted)'}}>⭐ {city.popularity_score}/100</span>
-                        </div>
+                        {(() => { const ct = getCostTierLabel(city.cost_index, user?.country); return (
+                          <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+                            <span style={{fontSize:'var(--font-size-sm)', color:ct.color, fontWeight:'var(--font-weight-semibold)'}}>{ct.text}</span>
+                            <span style={{fontSize:'var(--font-size-xs)', color:'var(--color-text-muted)'}}>⭐ {city.popularity_score}/100</span>
+                          </div>
+                        ); })()}
                       </div>
                     </div>
                   );
@@ -121,14 +129,16 @@ const CitySearch = () => {
                 <button style={{position:'absolute', top:8, right:8, background:'rgba(0,0,0,0.3)', border:'none', color:'white', cursor:'pointer', borderRadius:'50%', width:28, height:28}} onClick={() => setSelectedCity(null)}>✕</button>
                 {selectedCity.description && <p style={{fontSize:'var(--font-size-sm)', color:'var(--color-text-muted)', marginBottom:'var(--space-4)', lineHeight:'var(--line-height-relaxed)'}}>{selectedCity.description}</p>}
                 <div style={{display:'flex', justifyContent:'space-between', marginBottom:'var(--space-3)', fontSize:'var(--font-size-sm)'}}>
-                  <span style={{color:'var(--color-text-muted)'}}>Cost Index</span>
-                  <span style={{fontWeight:'var(--font-weight-semibold)', color:getCostLabel(selectedCity.cost_index).color}}>{getCostLabel(selectedCity.cost_index).label} — {getCostLabel(selectedCity.cost_index).text}</span>
+                  <span style={{color:'var(--color-text-muted)'}}>Cost Level</span>
+                  {(() => { const ct = getCostTierLabel(selectedCity.cost_index, user?.country); return (
+                    <span style={{fontWeight:'var(--font-weight-semibold)', color:ct.color}}>{ct.label} — {ct.text}</span>
+                  ); })()}
                 </div>
                 <div style={{display:'flex', justifyContent:'space-between', marginBottom:'var(--space-4)', fontSize:'var(--font-size-sm)'}}>
                   <span style={{color:'var(--color-text-muted)'}}>Popularity</span>
                   <span style={{fontWeight:'var(--font-weight-semibold)'}}>{selectedCity.popularity_score}/100</span>
                 </div>
-                <button className="btn-primary" style={{width:'100%', textAlign:'center', justifyContent:'center'}} onClick={() => navigate('/trips/new')}>🗺️ Plan a Trip Here</button>
+                <button className="btn-primary" style={{width:'100%', textAlign:'center', justifyContent:'center'}} onClick={() => navigate('/trips/new')}>Plan a Trip Here</button>
               </div>
             </div>
           )}

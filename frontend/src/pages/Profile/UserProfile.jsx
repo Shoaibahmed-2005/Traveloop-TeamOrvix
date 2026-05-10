@@ -103,7 +103,7 @@ const UserProfile = () => {
               <Link key={t.id} to={`/trips/${t.id}`} className="card" style={{display:'block', padding:'var(--space-4)'}}>
                 <div style={{fontWeight:'var(--font-weight-semibold)', marginBottom:'var(--space-1)'}}>{t.title}</div>
                 <div style={{fontSize:'var(--font-size-sm)', color:'var(--color-text-muted)', marginBottom:'var(--space-2)'}}>{formatDate(t.start_date)} — {formatDate(t.end_date)}</div>
-                {t.total_budget > 0 && <div style={{fontSize:'var(--font-size-sm)', color:'var(--color-secondary)'}}>{formatCurrency(t.total_budget)} budget</div>}
+                {t.total_budget > 0 && <div style={{fontSize:'var(--font-size-sm)', color:'var(--color-secondary)'}}>{formatCurrency(t.total_budget, user?.country)} budget</div>}
               </Link>
             ))}
           </div>

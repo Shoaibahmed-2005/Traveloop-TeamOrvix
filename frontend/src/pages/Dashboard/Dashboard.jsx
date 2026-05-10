@@ -7,10 +7,10 @@ import { cityAPI } from '../../api/cityAPI.js';
 import Wave from '../../components/common/Wave.jsx';
 import Loader from '../../components/common/Loader.jsx';
 import { formatDateRange, daysBetween, daysRemaining } from '../../utils/formatDate.js';
-import { formatCurrency } from '../../utils/formatCurrency.js';
+import { formatCurrency, getCostTierLabel } from '../../utils/formatCurrency.js';
 import './Dashboard.css';
 
-const STAT_ICONS = ['→','◆','◈','₹'];
+const STAT_ICONS = ['✈', '●', '◎', '₹'];
 
 const StatCard = ({ icon, value, label, color }) => (
   <div className="stat-card" style={{ borderTop: `3px solid ${color}` }}>
@@ -46,10 +46,13 @@ const Dashboard = () => {
   const totalSpent = trips.reduce((acc, t) => acc + parseFloat(t.spent_amount || 0), 0);
   const recentTrips = trips.slice(0, 3);
 
-  const getCityGradient = (i) => {
-    const grads = ['linear-gradient(135deg,#1B3A6B,#00B4A6)','linear-gradient(135deg,#00B4A6,#0F2444)','linear-gradient(135deg,#2D5AA0,#00D4C4)','linear-gradient(135deg,#0F2444,#00B4A6)','linear-gradient(135deg,#1B3A6B,#4A7FCC)'];
-    return grads[i % grads.length];
-  };
+  const FALLBACK_GRADIENTS = [
+    'linear-gradient(135deg,#1B3A6B,#00B4A6)',
+    'linear-gradient(135deg,#00B4A6,#0F2444)',
+    'linear-gradient(135deg,#2D5AA0,#00D4C4)',
+    'linear-gradient(135deg,#0F2444,#00B4A6)',
+    'linear-gradient(135deg,#1B3A6B,#4A7FCC)',
+  ];
 
   return (
     <div className="dashboard">
@@ -67,10 +70,10 @@ const Dashboard = () => {
 
       <div className="page-container dashboard-body">
         <div className="stats-grid">
-          <StatCard icon="→" value={trips.length} label="Total Trips" color="var(--color-primary)" />
-          <StatCard icon="◆" value={summary.ongoing || 0} label="Ongoing" color="var(--status-ongoing)" />
-          <StatCard icon="◈" value={summary.upcoming || 0} label="Upcoming" color="var(--status-upcoming)" />
-          <StatCard icon="₹" value={formatCurrency(totalSpent)} label="Total Spent" color="var(--color-accent)" />
+          <StatCard icon="✈" value={trips.length} label="Total Trips" color="var(--color-primary)" />
+          <StatCard icon="●" value={summary.ongoing || 0} label="Ongoing" color="var(--status-ongoing)" />
+          <StatCard icon="◎" value={summary.upcoming || 0} label="Upcoming" color="var(--status-upcoming)" />
+          <StatCard icon="₹" value={formatCurrency(totalSpent, user?.country)} label="Total Spent" color="var(--color-accent)" />
         </div>
 
         <section className="dashboard-section">
@@ -82,11 +85,23 @@ const Dashboard = () => {
             {loading ? Array.from({length:5}).map((_,i) => <div key={i} className="skeleton city-card-skel" />) :
               popularCities.map((city, i) => (
                 <div key={city.id} className="city-card" onClick={() => navigate('/explore')}>
-                  <div className="city-card-img" style={{ background: getCityGradient(i) }}>
+                  <div className="city-card-img" style={{
+                    background: city.image_url ? 'none' : FALLBACK_GRADIENTS[i % FALLBACK_GRADIENTS.length],
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}>
+                    {city.image_url && (
+                      <img
+                        src={city.image_url}
+                        alt={city.name}
+                        style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}
+                        onError={e => { e.target.style.display='none'; e.target.parentElement.style.background = FALLBACK_GRADIENTS[i % FALLBACK_GRADIENTS.length]; }}
+                      />
+                    )}
                     <div className="city-card-overlay">
-                      <div className="city-cost-badge" style={{color: city.cost_index < 1 ? '#4ade80' : city.cost_index < 2 ? '#f59e0b' : '#ef4444'}}>
-                        {'₹'.repeat(Math.min(3, Math.ceil(city.cost_index)))}
-                      </div>
+                      {(() => { const ct = getCostTierLabel(city.cost_index, user?.country); return (
+                        <div className="city-cost-badge" style={{color: ct.color}}>{ct.text}</div>
+                      ); })()}
                     </div>
                   </div>
                   <div className="city-card-body">
@@ -108,7 +123,7 @@ const Dashboard = () => {
           {loading ? <Loader count={3} height={200} /> :
             recentTrips.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-state-icon">→</div>
+                <div className="empty-state-icon" style={{fontSize:40}}>✈</div>
                 <h3 className="empty-state-title">No trips yet!</h3>
                 <p className="empty-state-text">Start planning your first adventure and make memories that last a lifetime.</p>
                 <button className="btn-primary" onClick={() => navigate('/trips/new')}>Plan My First Trip</button>

@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { budgetAPI } from '../../api/budgetAPI.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
+import { useAuth } from '../../context/AuthContext.jsx';
 import { formatDate } from '../../utils/formatDate.js';
 
 const COLORS = ['#1B3A6B','#00B4A6','#F4A340','#EF4444','#10B981','#6C63FF'];
@@ -12,6 +13,7 @@ const CATEGORY_ICONS = { transport:'✈️', hotel:'🏨', food:'🍽️', activ
 
 const BudgetView = () => {
   const { id: tripId } = useParams();
+  const { user } = useAuth();
   const [budget, setBudget] = useState(null);
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -76,13 +78,13 @@ const BudgetView = () => {
         </div>
       )}
 
-      <div style={{display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'var(--space-4)', marginBottom:'var(--space-8)'}}>
+      <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))', gap:'var(--space-4)', marginBottom:'var(--space-8)'}}>
         {[
-          { label:'Total Budget', value: formatCurrency(budget?.totalBudget), icon:'💼', color:'var(--color-primary)' },
-          { label:'Total Spent', value: formatCurrency(budget?.totalSpent), icon:'💸', color:'var(--color-error)' },
-          { label:'Remaining', value: formatCurrency(budget?.remaining), icon:'💰', color: budget?.remaining >= 0 ? 'var(--color-success)' : 'var(--color-error)' },
-          { label:'Avg Per Day', value: formatCurrency(budget?.avgPerDay), icon:'📊', color:'var(--color-accent)' },
-        ].map(s => (
+          { label:'Total Budget', value: formatCurrency(budget?.totalBudget, user?.country), icon:'💼', color:'var(--color-primary)' },
+          { label:'Total Spent', value: formatCurrency(budget?.totalSpent, user?.country), icon:'💸', color:'var(--color-error)' },
+          { label:'Remaining', value: formatCurrency(budget?.remaining, user?.country), icon:'💰', color: budget?.remaining >= 0 ? 'var(--color-success)' : 'var(--color-error)' },
+          { label:'Avg Per Day', value: formatCurrency(budget?.avgPerDay, user?.country), icon:'📊', color:'var(--color-accent)' },
+        ].map((s,i) => (
           <div key={s.label} className="card" style={{padding:'var(--space-5)'}}>
             <div style={{fontSize:24, marginBottom:'var(--space-2)'}}>{s.icon}</div>
             <div style={{fontSize:'var(--font-size-2xl)', fontWeight:'var(--font-weight-extrabold)', color:s.color}}>{s.value}</div>
@@ -101,7 +103,7 @@ const BudgetView = () => {
                 <Pie data={pieData} cx="50%" cy="50%" outerRadius={90} dataKey="value" label={({name, percent}) => `${name} ${(percent*100).toFixed(0)}%`}>
                   {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                 </Pie>
-                <Tooltip formatter={(v) => formatCurrency(v)} />
+                <Tooltip formatter={(v) => formatCurrency(v, user?.country)} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -112,7 +114,7 @@ const BudgetView = () => {
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-light)" />
                 <XAxis dataKey="date" tick={{fontSize:11}} />
                 <YAxis tick={{fontSize:11}} />
-                <Tooltip formatter={(v) => formatCurrency(v)} />
+                <Tooltip formatter={(v) => formatCurrency(v, user?.country)} />
                 <Bar dataKey="amount" fill="var(--color-secondary)" radius={[4,4,0,0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -168,7 +170,7 @@ const BudgetView = () => {
                   <td style={{padding:'var(--space-3) var(--space-4)', fontSize:'var(--font-size-sm)', color:'var(--color-text-muted)'}}>{formatDate(exp.expense_date)}</td>
                   <td style={{padding:'var(--space-3) var(--space-4)'}}><span className="badge" style={{background:'var(--color-surface-2)', color:'var(--color-text-primary)'}}>{CATEGORY_ICONS[exp.category]} {exp.category}</span></td>
                   <td style={{padding:'var(--space-3) var(--space-4)', fontSize:'var(--font-size-sm)'}}>{exp.description}</td>
-                  <td style={{padding:'var(--space-3) var(--space-4)', fontWeight:'var(--font-weight-bold)', color:'var(--color-primary)'}}>{formatCurrency(exp.amount)}</td>
+                  <td style={{padding:'var(--space-3) var(--space-4)', fontWeight:'var(--font-weight-bold)', color:'var(--color-primary)'}}>{formatCurrency(exp.amount, user?.country)}</td>
                   <td style={{padding:'var(--space-3) var(--space-4)'}}><button className="btn-ghost" style={{padding:'4px 8px', color:'var(--color-error)'}} onClick={() => deleteExpense(exp.id)}>🗑️</button></td>
                 </tr>
               ))}

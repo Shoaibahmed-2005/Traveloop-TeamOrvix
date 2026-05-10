@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { activityAPI } from '../../api/activityAPI.js';
 import { useDebounce } from '../../hooks/useDebounce.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
+import { useAuth } from '../../context/AuthContext.jsx';
 import { toast } from 'react-toastify';
 
 const CATEGORIES = ['sightseeing','food','adventure','culture','shopping','nightlife'];
 const CAT_ICONS = { sightseeing:'🏛️', food:'🍜', adventure:'🧗', culture:'🎭', shopping:'🛍️', nightlife:'🌙' };
 
 const ActivitySearch = () => {
+  const { user } = useAuth();
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -59,7 +61,7 @@ const ActivitySearch = () => {
               </div>
             </div>
             <div className="form-group">
-              <label className="input-label">Max Cost: {formatCurrency(maxCost)}</label>
+              <label className="input-label">Max Cost: {formatCurrency(maxCost, user?.country)}</label>
               <input type="range" min={0} max={500} step={10} value={maxCost} onChange={e => setMaxCost(Number(e.target.value))} style={{width:'100%', accentColor:'var(--color-secondary)'}} />
             </div>
             <div className="form-group">
@@ -94,7 +96,7 @@ const ActivitySearch = () => {
                         <div style={{display:'flex', gap:'var(--space-2)', flexShrink:0}}>
                           <span className="badge badge-upcoming">{CAT_ICONS[act.category]} {act.category}</span>
                           <span className="badge" style={{background:'var(--color-success-bg)', color:'var(--color-success)'}}>⭐ {act.rating}</span>
-                          {act.estimated_cost > 0 ? <span className="badge" style={{background:'var(--color-warning-bg)', color:'var(--color-warning)'}}>{formatCurrency(act.estimated_cost)}</span> : <span className="badge" style={{background:'#D1FAE5', color:'#059669'}}>Free</span>}
+                          {act.estimated_cost > 0 ? <span className="badge" style={{background:'var(--color-warning-bg)', color:'var(--color-warning)'}}>{formatCurrency(act.estimated_cost, user?.country)}</span> : <span className="badge" style={{background:'#D1FAE5', color:'#059669'}}>Free</span>}
                         </div>
                       </div>
                       {act.duration_hours && <p style={{fontSize:'var(--font-size-xs)', color:'var(--color-text-muted)', marginTop:4}}>⏱️ {act.duration_hours}h</p>}
@@ -122,7 +124,7 @@ const ActivitySearch = () => {
               {selected.description && <p style={{marginBottom:'var(--space-4)', lineHeight:'var(--line-height-relaxed)'}}>{selected.description}</p>}
               <div style={{display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'var(--space-3)'}}>
                 {[
-                  { icon:'💰', label:'Cost', value: selected.estimated_cost > 0 ? formatCurrency(selected.estimated_cost) : 'Free' },
+                  { icon:'💰', label:'Cost', value: selected.estimated_cost > 0 ? formatCurrency(selected.estimated_cost, user?.country) : 'Free' },
                   { icon:'⏱️', label:'Duration', value: `${selected.duration_hours}h` },
                   { icon:'⭐', label:'Rating', value: `${selected.rating}/5` },
                 ].map(s => (

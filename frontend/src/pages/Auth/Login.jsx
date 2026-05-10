@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext.jsx';
-import './Auth.css';
+import './Login.css';
+
+const SLIDES = ['/city1.jpg', '/city2.jpg', '/city3.jpg', '/city4.jpg', '/city5.jpg'];
 
 const Login = () => {
   const { login } = useAuth();
@@ -34,43 +36,106 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-layout">
-      <div className="auth-left">
-        <Link to="/"><img src="/logo.png" alt="Traveloop" height="80" className="auth-logo" onError={e => { e.target.style.display='none'; }} /></Link>
-        <h1 className="auth-hero-title">Dream it.<br/>Plan it.<br/>Live it.</h1>
-        <p className="auth-hero-sub">Your personalized travel planner for unforgettable adventures across India and beyond.</p>
-        <div className="auth-features">
-          <div className="auth-feature-item"><span className="auth-feature-dot" /> Plan multi-city trips with ease</div>
-          <div className="auth-feature-item"><span className="auth-feature-dot" /> Track budgets in real-time</div>
-          <div className="auth-feature-item"><span className="auth-feature-dot" /> Share itineraries with the community</div>
+    <div className="login-page">
+      {/* True full-image slideshow using real <img> elements */}
+      <div className="login-bg">
+        <div className="cinema-slider-track">
+          {[...SLIDES, SLIDES[0]].map((src, i) => (
+            <img key={i} src={src} alt="" className="cinema-slide-img" />
+          ))}
         </div>
       </div>
-      <div className="auth-right">
-        <div className="auth-form-card">
-          <h2 className="auth-form-title">Welcome Back</h2>
-          <p className="auth-form-sub">Sign in to continue planning your adventures</p>
-          <form onSubmit={handleSubmit} className="auth-form">
-            <div className="form-group">
-              <label className="input-label">Email Address</label>
-              <input className={`input-field ${errors.email ? 'error' : ''}`} type="email" placeholder="arjun@example.com" value={form.email}
-                onChange={e => setForm({...form, email: e.target.value})} onBlur={() => { const e = validate(); setErrors(prev => ({...prev, email: e.email})); }} />
-              {errors.email && <span className="input-error">{errors.email}</span>}
+      
+      {/* Left — hero content, vertically centered */}
+      <div className="hero-content">
+        <div className="login-logo-wrapper">
+          <Link to="/">
+            <div className="login-logo-pill">
+              <img src="/logo.png" alt="Traveloop" />
             </div>
-            <div className="form-group">
-              <label className="input-label">Password</label>
-              <div className="input-pwd-wrap">
-                <input className={`input-field ${errors.password ? 'error' : ''}`} type={showPwd ? 'text' : 'password'} placeholder="Enter your password" value={form.password}
-                  onChange={e => setForm({...form, password: e.target.value})} onBlur={() => { const e = validate(); setErrors(prev => ({...prev, password: e.password})); }} />
-                <button type="button" className="pwd-toggle" onClick={() => setShowPwd(!showPwd)}>{showPwd ? '◉' : '◎'}</button>
-              </div>
-              {errors.password && <span className="input-error">{errors.password}</span>}
+          </Link>
+        </div>
+        <span className="hero-badge">✈️ World's Travel Planner</span>
+        <h1 className="hero-heading">
+          <span className="white">Dream it.<br />Plan it.</span>
+          <span className="teal">Live it.</span>
+        </h1>
+        <p className="hero-subtitle">
+          Seamlessly plan multi-city trips across the world's most 
+          iconic destinations. Modern travel, reimagined for you.
+        </p>
+        <div className="stats-bar">
+          <div className="stat-item">
+            <span className="stat-number">50K+</span>
+            <span className="stat-label">Trips Planned</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">120+</span>
+            <span className="stat-label">Cities Covered</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">10K+</span>
+            <span className="stat-label">Happy Travelers</span>
+          </div>
+        </div>
+        <div className="city-pills">
+          {['Paris', 'Tokyo', 'Bali', 'New York', 'Dubai', 'Rome', 'Goa', 'Jaipur'].map(city => (
+            <span key={city} className="city-pill">{city}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Right — login card, vertically centered */}
+      <div className="login-card">
+        <h2 className="login-card-title">Welcome Back</h2>
+        <p className="login-card-subtitle">Sign in to continue planning your adventures</p>
+        
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="login-input-group">
+            <label>Email Address</label>
+            <input 
+              type="email" 
+              className={errors.email ? 'error' : ''} 
+              placeholder="arjun@example.com"
+              value={form.email} 
+              onChange={e => setForm({ ...form, email: e.target.value })}
+              onBlur={() => { const e = validate(); setErrors(p => ({ ...p, email: e.email })); }} 
+            />
+            {errors.email && <span className="login-error-text">{errors.email}</span>}
+          </div>
+
+          <div className="login-input-group">
+            <label>Password</label>
+            <div className="login-pwd-wrap">
+              <input 
+                type={showPwd ? 'text' : 'password'} 
+                className={errors.password ? 'error' : ''}
+                placeholder="Enter your password" 
+                value={form.password}
+                onChange={e => setForm({ ...form, password: e.target.value })}
+                onBlur={() => { const e = validate(); setErrors(p => ({ ...p, password: e.password })); }} 
+              />
+              <button type="button" onClick={() => setShowPwd(!showPwd)}>
+                {showPwd ? 'Hide' : 'Show'}
+              </button>
             </div>
-            <button type="submit" className="btn-primary auth-btn" disabled={loading}>
-              {loading ? <><div className="spinner" />&nbsp;Signing in...</> : 'Sign In →'}
-            </button>
-          </form>
-          <div className="auth-divider"><span>New to Traveloop?</span></div>
-          <Link to="/register" className="btn-secondary auth-btn" style={{textAlign:'center',justifyContent:'center'}}>Create Free Account</Link>
+            {errors.password && <span className="login-error-text">{errors.password}</span>}
+          </div>
+
+          <div className="login-options">
+            <label>
+              <input type="checkbox" /> Remember me
+            </label>
+            <Link to="/forgot-password">Forgot password?</Link>
+          </div>
+
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? 'Signing in...' : 'Sign In →'}
+          </button>
+        </form>
+
+        <div className="login-signup-link">
+          New to Traveloop? <Link to="/register">Create Free Account</Link>
         </div>
       </div>
     </div>
