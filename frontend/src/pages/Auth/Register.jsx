@@ -93,8 +93,21 @@ const Register = () => {
     const e = {};
     if (!form.firstName || form.firstName.length < 2) e.firstName = 'At least 2 characters';
     if (!form.lastName || form.lastName.length < 2) e.lastName = 'At least 2 characters';
-    if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Valid email required';
-    if (!form.password || form.password.length < 8) e.password = 'Min 8 chars with uppercase, number & special char';
+    
+    if (!form.email) {
+      e.email = 'Email address is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      e.email = 'Invalid email format';
+    }
+    
+    if (!form.password) {
+      e.password = 'Password is required';
+    } else if (form.password.length < 6) {
+      e.password = 'Password must be at least 6 characters long';
+    } else if (!/[A-Z]/.test(form.password) || !/[0-9]/.test(form.password)) {
+      e.password = 'Must contain at least one uppercase letter and one number';
+    }
+    
     if (form.password !== form.confirmPassword) e.confirmPassword = 'Passwords do not match';
     if (!form.country) e.country = 'Please select a country';
     return e;
@@ -180,7 +193,10 @@ const Register = () => {
               <div className="glass-field-group">
                 <label>Email Address *</label>
                 <input type="email" className={errors.email ? 'error' : ''} placeholder="arjun@example.com"
-                  value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+                  value={form.email} 
+                  onChange={e => setForm({ ...form, email: e.target.value })} 
+                  onBlur={() => { const e = validate(); setErrors(p => ({ ...p, email: e.email })); }}
+                />
                 {errors.email && <span className="glass-error">{errors.email}</span>}
               </div>
 
@@ -210,7 +226,10 @@ const Register = () => {
                 <div className="pwd-wrap">
                   <input type={showPwd ? 'text' : 'password'} className={errors.password ? 'error' : ''}
                     placeholder="Min 8 chars, uppercase, number, special"
-                    value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
+                    value={form.password} 
+                    onChange={e => setForm({ ...form, password: e.target.value })} 
+                    onBlur={() => { const e = validate(); setErrors(p => ({ ...p, password: e.password })); }}
+                  />
                   <button type="button" onClick={() => setShowPwd(!showPwd)}>{showPwd ? 'Hide' : 'Show'}</button>
                 </div>
                 {pwdStrength && (

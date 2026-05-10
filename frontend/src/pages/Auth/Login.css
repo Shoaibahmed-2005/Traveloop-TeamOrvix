@@ -318,6 +318,15 @@
   text-decoration: underline;
 }
 
+.login-error-text {
+  display: block;
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 6px;
+  animation: fadeIn 0.2s ease-in;
+}
+
 .login-btn {
   width: 100%;
   padding: 13px;

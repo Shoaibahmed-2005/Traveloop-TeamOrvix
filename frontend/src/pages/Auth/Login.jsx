@@ -16,8 +16,17 @@ const Login = () => {
 
   const validate = () => {
     const e = {};
-    if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Valid email required';
-    if (!form.password) e.password = 'Password is required';
+    if (!form.email) {
+      e.email = 'Email address is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      e.email = 'Invalid email format';
+    }
+    
+    if (!form.password) {
+      e.password = 'Password is required';
+    } else if (form.password.length < 6) {
+      e.password = 'Password must be at least 6 characters long';
+    }
     return e;
   };
 
