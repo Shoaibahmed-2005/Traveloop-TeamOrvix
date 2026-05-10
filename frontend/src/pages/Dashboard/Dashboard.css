@@ -1,0 +1,54 @@
+.dashboard-hero {
+  position: relative;
+  padding: var(--space-16) 0 0;
+  overflow: hidden;
+}
+.hero-content { max-width: 600px; position: relative; z-index: 2; padding-bottom: var(--space-10); }
+.hero-title { font-size: var(--font-size-4xl); font-weight: var(--font-weight-extrabold); color: white; margin-bottom: var(--space-3); letter-spacing: -0.5px; }
+.hero-sub { font-size: var(--font-size-lg); color: rgba(255,255,255,0.8); margin-bottom: var(--space-8); line-height: var(--line-height-relaxed); }
+.hero-cta { background: white; color: var(--color-primary); font-weight: var(--font-weight-bold); box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+.hero-cta:hover { background: var(--color-surface-2); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+
+.dashboard-body { padding-top: var(--space-8); padding-bottom: var(--space-16); }
+
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); margin-bottom: var(--space-10); }
+.stat-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border-light);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+.stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.stat-icon-circle { width: 36px; height: 36px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-base); font-weight: var(--font-weight-bold); margin-bottom: var(--space-3); }
+.stat-value { font-size: var(--font-size-3xl); font-weight: var(--font-weight-extrabold); }
+.stat-label { font-size: var(--font-size-sm); color: var(--color-text-muted); margin-top: var(--space-1); letter-spacing: 0.3px; }
+
+.dashboard-section { margin-bottom: var(--space-10); }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-5); }
+.see-all-link { font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-secondary); transition: color var(--transition-fast); }
+.see-all-link:hover { color: var(--color-secondary-dark); }
+
+.cities-scroll { display: flex; gap: var(--space-4); overflow-x: auto; padding-bottom: var(--space-3); scroll-snap-type: x mandatory; }
+.cities-scroll::-webkit-scrollbar { height: 4px; }
+.city-card { flex-shrink: 0; width: 180px; border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; background: var(--color-surface); box-shadow: var(--shadow-md); transition: transform var(--transition-base); scroll-snap-align: start; }
+.city-card:hover { transform: translateY(-4px); }
+.city-card-img { height: 120px; position: relative; display: flex; align-items: center; justify-content: center; }
+.city-card-overlay { position: absolute; top: 8px; right: 8px; }
+.city-cost-badge { font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); background: rgba(0,0,0,0.25); backdrop-filter: blur(4px); padding: 2px 8px; border-radius: var(--radius-full); }
+.city-card-body { padding: var(--space-3); }
+.city-name { font-weight: var(--font-weight-bold); color: var(--color-text-primary); }
+.city-country { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.city-region-tag { display: inline-block; margin-top: 4px; font-size: 10px; background: var(--color-info-bg); color: var(--color-info); border-radius: var(--radius-full); padding: 2px 8px; font-weight: var(--font-weight-semibold); letter-spacing: 0.3px; }
+.city-card-skel { flex-shrink: 0; width: 180px; height: 180px; border-radius: var(--radius-lg); }
+
+.trips-preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+.trip-preview-card { cursor: pointer; overflow: hidden; }
+.trip-preview-img { height: 160px; display: flex; align-items: flex-end; padding: var(--space-3); }
+.trip-preview-body { padding: var(--space-4); }
+.trip-preview-title { font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-text-primary); margin-bottom: var(--space-1); }
+.trip-preview-dates { font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--space-3); }
+
+@media (max-width: 1024px) { .stats-grid { grid-template-columns: repeat(2,1fr); } .trips-preview-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 640px) { .stats-grid { grid-template-columns: repeat(2,1fr); } .trips-preview-grid { grid-template-columns: 1fr; } .hero-title { font-size: var(--font-size-2xl); } }
