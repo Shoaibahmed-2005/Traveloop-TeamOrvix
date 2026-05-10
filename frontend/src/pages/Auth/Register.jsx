@@ -102,13 +102,24 @@ const Register = () => {
     
     if (!form.password) {
       e.password = 'Password is required';
-    } else if (form.password.length < 6) {
-      e.password = 'Password must be at least 6 characters long';
-    } else if (!/[A-Z]/.test(form.password) || !/[0-9]/.test(form.password)) {
-      e.password = 'Must contain at least one uppercase letter and one number';
+    } else if (form.password.length < 8) {
+      e.password = 'Password must be at least 8 characters long';
+    } else if (!/[A-Z]/.test(form.password)) {
+      e.password = 'Must contain at least one uppercase letter';
+    } else if (!/[a-z]/.test(form.password)) {
+      e.password = 'Must contain at least one lowercase letter';
+    } else if (!/[0-9]/.test(form.password)) {
+      e.password = 'Must contain at least one number';
+    } else if (!/[^a-zA-Z0-9]/.test(form.password)) {
+      e.password = 'Must contain at least one special character';
     }
     
-    if (form.password !== form.confirmPassword) e.confirmPassword = 'Passwords do not match';
+    if (!form.confirmPassword) {
+      e.confirmPassword = 'Please confirm your password';
+    } else if (form.password !== form.confirmPassword) {
+      e.confirmPassword = 'Passwords do not match';
+    }
+    
     if (!form.country) e.country = 'Please select a country';
     return e;
   };
@@ -118,11 +129,14 @@ const Register = () => {
     const e = validate();
     if (Object.keys(e).length) { setErrors(e); return; }
     setLoading(true);
-    const fullPhone = form.phone ? `${form.countryCode} ${form.phone}` : '';
+    const rawPhone = form.phone.trim();
+    const fullPhone = rawPhone ? `${form.countryCode}${rawPhone}`.replace(/\s/g, '') : '';
     try {
       await register({
-        firstName: form.firstName, lastName: form.lastName,
-        email: form.email, password: form.password,
+        firstName: form.firstName.trim(), 
+        lastName: form.lastName.trim(),
+        email: form.email.trim(), 
+        password: form.password,
         phone: fullPhone || undefined,
         city: form.city || undefined,
         country: form.country || undefined,
@@ -178,13 +192,19 @@ const Register = () => {
                 <div className="glass-field-group">
                   <label>First Name *</label>
                   <input type="text" className={errors.firstName ? 'error' : ''} placeholder="Arjun"
-                    value={form.firstName} onChange={e => setForm({ ...form, firstName: e.target.value })} />
+                    value={form.firstName} 
+                    onChange={e => setForm({ ...form, firstName: e.target.value })} 
+                    onBlur={() => { const e = validate(); setErrors(p => ({ ...p, firstName: e.firstName })); }}
+                  />
                   {errors.firstName && <span className="glass-error">{errors.firstName}</span>}
                 </div>
                 <div className="glass-field-group">
                   <label>Last Name *</label>
                   <input type="text" className={errors.lastName ? 'error' : ''} placeholder="Sharma"
-                    value={form.lastName} onChange={e => setForm({ ...form, lastName: e.target.value })} />
+                    value={form.lastName} 
+                    onChange={e => setForm({ ...form, lastName: e.target.value })} 
+                    onBlur={() => { const e = validate(); setErrors(p => ({ ...p, lastName: e.lastName })); }}
+                  />
                   {errors.lastName && <span className="glass-error">{errors.lastName}</span>}
                 </div>
               </div>
@@ -248,7 +268,10 @@ const Register = () => {
                 <label>Confirm Password *</label>
                 <input type="password" className={errors.confirmPassword ? 'error' : ''}
                   placeholder="Repeat password"
-                  value={form.confirmPassword} onChange={e => setForm({ ...form, confirmPassword: e.target.value })} />
+                  value={form.confirmPassword} 
+                  onChange={e => setForm({ ...form, confirmPassword: e.target.value })} 
+                  onBlur={() => { const e = validate(); setErrors(p => ({ ...p, confirmPassword: e.confirmPassword })); }}
+                />
                 {errors.confirmPassword && <span className="glass-error">{errors.confirmPassword}</span>}
               </div>
 
